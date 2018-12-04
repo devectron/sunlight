@@ -8,8 +8,8 @@
   <a href="https://github.com/devectron/sunlight/blob/master/LICENSE">
     <img src="https://img.shields.io/aur/license/yaourt.svg" alt="license">
   </a>
-  <a href="https://travis-ci.org/devectron/sunlight">
-    <img src="https://travis-ci.org/devectron/sunlight.svg?branch=master">
+  <a href="https://travis-ci.com/devectron/sunlight">
+    <img src="https://travis-ci.com/devectron/sunlight.svg?branch=master">
   </a>
 </p>
 
