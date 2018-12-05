@@ -15,6 +15,9 @@ func config() core.Config {
 	serverPort := os.Getenv("SERVER_PORT")
 	sqlPort := os.Getenv("SQL_PORT")
 	sqlDbName := os.Getenv("SQL_DB_NAME")
+	if serverPort == "" {
+		serverPort = "7375"
+	}
 	return core.Config{
 		ServerPort: serverPort,
 		SqlDbPort:  sqlPort,

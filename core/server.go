@@ -2,7 +2,7 @@ package core
 
 import (
 	"crypto/md5"
-	"encoding/base64"
+	//"encoding/base64"
 	"fmt"
 	"html/template"
 	"io"
@@ -78,15 +78,15 @@ func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		m.mutex.RLock()
 		defer m.mutex.RUnlock()
 		log.Inf("Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
-		in := r.Cookie("verif")
-		c := http.Cookie{
-			Name:    "verif",
-			Value:   base64.StdEncoding.EncodeToString([]byte(1)),
-			Path:    "/",
-			MaxAge:  86400,
-			Expires: time.Now().AddDate(0, 0, 1),
-		}
-		r.AddCookie(c)
+		//_ := r.Cookie("verif")
+		//c := http.Cookie{
+		//	Name:    "verif",
+		//	Value:   base64.StdEncoding.EncodeToString([]byte('1')),
+		//	Path:    "/",
+		//	MaxAge:  86400,
+		//	Expires: time.Now().AddDate(0, 0, 1),
+		//}
+		//r.AddCookie(c)
 		m.Index(w, r)
 	case "/upload":
 		if r.Method == "POST" {
@@ -138,12 +138,12 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Err("Error while writing to the file %v", err)
 	}
-	t := r.Form["type"]
-	switch t {
-	case "pngtojpeg":
-		PngToJpeg(path)
-	case "imgtopdf":
-		ImagesToPdf(path)
-	}
+	//t := r.Form["type"]
+	//switch t {
+	//case "pngtojpeg":
+	//	PngToJpeg(path)
+	//case "imgtopdf":
+	//	ImagesToPdf(path)
+	//}
 	go func() { http.Redirect(w, r, "/", 200) }()
 }

@@ -33,3 +33,7 @@
   go-version = "go1.8.3"
   install = [ "." ]
 
+
+[[constraint]]
+  name = "github.com/unidoc/unidoc"
+  version = "2.2.0"

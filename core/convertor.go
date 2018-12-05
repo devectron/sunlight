@@ -29,12 +29,12 @@ func PngToJpeg(img string) {
 	imgdst := image.NewRGBA(imgsrc.Bounds())
 	draw.Draw(imgdst, imgdst.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
 	draw.Draw(imgdst, imgdst.Bounds(), imgsrc, imgsrc.Bounds().Min, draw.Over)
-	check := saveImage(imgdst, name+".jpg")
+	check := saveImage(imgdst, name[0]+".jpg", path.Ext(img))
 	if !check {
 		log.Err("Error While converting ...")
 	}
 }
-func saveImage(imgsrc image.Image, imgname string) bool {
+func saveImage(imgsrc image.Image, imgname string, format string) bool {
 	out, err := os.Create(imgname)
 	if err != nil {
 		log.Err("Can't save image %v", err)

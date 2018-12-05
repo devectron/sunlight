@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/devectron/sunlight/log"
-	unicommon "github.com/unidoc/unidoc/common"
+	//	unicommon "github.com/unidoc/unidoc/common"
 	"github.com/unidoc/unidoc/pdf/creator"
 )
 
@@ -14,19 +14,20 @@ import (
 //ImagesToPdf convert image to a pdf file.
 func ImagesToPdf(imgsrc string, pdfdst string) {
 	name := strings.Split(imgsrc, path.Ext(imgsrc))
-	log.Inf("Converting %s to %s.pdf", ext[0], ext[0])
+	log.Inf("Converting %s to %s.pdf", name[0], name[0])
 	img, err := creator.NewImageFromFile(imgsrc)
 	if err != nil {
 		log.Err("Error while creating new image from file %v", err)
 	}
 	img.ScaleToWidth(612.0)
 	height := 612.0 * img.Height() / img.Width()
+	c := creator.New()
 	c.SetPageSize(creator.PageSize{612, height})
 	c.NewPage()
 	img.SetPos(0, 0)
 	_ = c.Draw(img)
-	err := c.WriteToFile(outputPath)
-	if err != nil {
-		log.Err("Error while writing to file %v", err)
-	}
+	c.WriteToFile(pdfdst + "/" + name[0] + ".pdf")
+	//if err != nil {
+	//	log.Err("Error while writing to file %v", err)
+	//}
 }
