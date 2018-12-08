@@ -14,7 +14,7 @@
 </p>
 
 <a href="https://stark-wave-19861.herokuapp.com/"><p align="center"><img src="assets/sunlight.png" style="70px"></p></a>
-# Electron Conversion
+# Sunlight
 
 ## Sommaire :
 - Fonctionnement de l'application

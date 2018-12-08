@@ -1,53 +1,26 @@
 package core
 
 import (
-	"image"
-	"image/color"
-	"image/draw"
-	"image/jpeg"
-	"image/png"
-	"os"
-	"path"
+	"fmt"
 	"strings"
 
+	"github.com/ConvertAPI/convertapi-go"
+	"github.com/ConvertAPI/convertapi-go/config"
+	"github.com/ConvertAPI/convertapi-go/param"
 	"github.com/devectron/sunlight/log"
 )
 
-//PngToJpeg convert png image to jpg format.
-func PngToJpeg(img string) {
-	log.Inf("Converting from PNG to JPEG ...")
-	name := strings.Split(img, path.Ext(img))
-	imgF, err := os.Open(img)
-	if err != nil {
-		log.Err("Cannot read file.... %v", err)
+func Convertor(srcfile string, dstfile string, apisecret string, format string) (string, bool) {
+	f := strings.Split(format, "to")
+	log.Inf("Converting %s to %s ...", srcfile, f[1])
+	config.Default.Secret = apisecret
+	fileParam := param.NewPath("file", srcfile, nil)
+	pdfRes := convertapi.ConvDef(f[0], f[1], fileParam)
+	if files, err := pdfRes.ToPath("tmp"); err == nil {
+		log.Inf("File saved to: ", files[0].Name())
+		return "", true
+	} else {
+		log.Err("Error while converting %v", err)
+		return fmt.Sprintf("%v", err), false
 	}
-	defer imgF.Close()
-	imgsrc, err := png.Decode(imgF)
-	if err != nil {
-		log.Err("Cannot decode to png file %v", err)
-	}
-	imgdst := image.NewRGBA(imgsrc.Bounds())
-	draw.Draw(imgdst, imgdst.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
-	draw.Draw(imgdst, imgdst.Bounds(), imgsrc, imgsrc.Bounds().Min, draw.Over)
-	check := saveImage(imgdst, name[0]+".jpg", path.Ext(img))
-	if !check {
-		log.Err("Error While converting ...")
-	}
-}
-func saveImage(imgsrc image.Image, imgname string, format string) bool {
-	out, err := os.Create(imgname)
-	if err != nil {
-		log.Err("Can't save image %v", err)
-	}
-	defer out.Close()
-	log.Inf("Saving %s", imgsrc)
-	switch format {
-	case "png":
-		png.Encode(out, imgsrc)
-		return true
-	case "jpg", "jpeg":
-		jpeg.Encode(out, imgsrc, nil)
-		return true
-	}
-	return false
 }

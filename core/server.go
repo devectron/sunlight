@@ -36,15 +36,17 @@ type Config struct {
 	ServerPort string
 	SqlDbPort  string
 	SqlDbName  string
+	EmailName  string
 }
 
 //SiteData data of the site.
 type SiteData struct {
-	Title   string
-	Err     string
-	NbrConv int
-	Users   string
-	Token   string
+	Title     string
+	ErrorBool bool
+	Error     string
+	NbrConv   int
+	Users     string
+	Token     string
 }
 
 //StartListening listen to a given port.
@@ -117,6 +119,8 @@ func (m *Mux) Index(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(h, strconv.FormatInt(crutime, 10))
 	token := fmt.Sprintf("%x", h.Sum(nil))
 	m.data.Token = token
+	m.data.Error = "Test"
+	m.data.ErrorBool = true
 	htmlTemplate.Execute(w, m.data)
 }
 

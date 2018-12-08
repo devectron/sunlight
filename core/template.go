@@ -67,8 +67,15 @@ const (
         <br>
         <button type="submit" class="btn btn-primary float-right">Convert <i class="fa fa-check"></i></button>
     </form>
-    <p class=""></p>
-    <p class=""></p>
+	{{if .ErrorBool}}
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>Error:</strong> {{.Error}}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	{{else}}
+	{{end}}
 </div>
 <nav class="navbar navbar-dark bg-dark mt-5 fixed-bottom">
   <div class="navbar-expand m-auto navbar-text">

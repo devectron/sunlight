@@ -22,5 +22,6 @@ func config() core.Config {
 		ServerPort: serverPort,
 		SqlDbPort:  sqlPort,
 		SqlDbName:  sqlDbName,
+		EmailName:  "devectron.not.replay@gmail.com",
 	}
 }
