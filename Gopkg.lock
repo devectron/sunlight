@@ -2,10 +2,34 @@
 
 
 [[projects]]
-  digest = "1:6a938c9667a5e544356b60302ffcac9420432444379ae5838252b0e2ccf61fd9"
-  name = "github.com/unidoc/unidoc"
+  branch = "master"
+  digest = "1:2679e2ae14d371eb347bdb44cc049c4bbf422c36bee2e74c071223ffe1b794cc"
+  name = "github.com/ConvertAPI/convertapi-go"
   packages = [
     ".",
+    "config",
+    "lib",
+    "param",
+  ]
+  pruneopts = "UT"
+  revision = "a822cefe0641ce45c4acd7a59c8b4f1266aeb196"
+
+[[projects]]
+  digest = "1:b640f196e31078d2ff78476ccb4487b5ac71c7a6f5be8ca2b7f5bb45cd215a07"
+  name = "github.com/mailjet/mailjet-apiv3-go"
+  packages = [
+    ".",
+    "fixtures",
+    "resources",
+  ]
+  pruneopts = "UT"
+  revision = "4597cb4aae1236575fcd3f7c09544191e1e0aa35"
+  version = "2.4.5"
+
+[[projects]]
+  digest = "1:69b0833556092b254b0a86b54b2e7ab67da115ffcf0b2a3751dde840a65a3a65"
+  name = "github.com/unidoc/unidoc"
+  packages = [
     "common",
     "common/license",
     "pdf/contentstream",
@@ -34,7 +58,10 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/unidoc/unidoc",
+    "github.com/ConvertAPI/convertapi-go",
+    "github.com/ConvertAPI/convertapi-go/config",
+    "github.com/ConvertAPI/convertapi-go/param",
+    "github.com/mailjet/mailjet-apiv3-go",
     "github.com/unidoc/unidoc/pdf/creator",
   ]
   solver-name = "gps-cdcl"
