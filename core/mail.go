@@ -1,33 +1,29 @@
 package core
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/devectron/sunlight/log"
 	. "github.com/mailjet/mailjet-apiv3-go"
 )
 
-func SendMail(tomail string, content string) {
+func SendMail(tomail string, link string, publicapi string, privateapi string) {
 	log.Inf("Sending e-mail to %s", tomail)
-	mailjetClient := NewMailjetClient(os.Getenv("MJ_APIKEY_PUBLIC"), os.Getenv("MJ_APIKEY_PRIVATE"))
+	mailjetClient := NewMailjetClient(publicapi, privateapi)
 	email := &InfoSendMail{
-		FromEmail: "pilot@mailjet.com",
-		FromName:  "Mailjet Pilot",
-		Subject:   "Your email flight plan!",
-		TextPart:  "Dear passenger, welcome to Mailjet! May the delivery force be with you!",
-		HTMLPart:  "<h3>Dear passenger, welcome to Mailjet!</h3><br />May the delivery force be with you!",
+		FromEmail: "devectron.not.replay@gmail.com",
+		FromName:  "Devectron Team",
+		Subject:   "File converted successfully",
+		TextPart:  "",
+		HTMLPart:  "<h1>Dear " + tomail + ":</h1> <p>Your file converted successfully you can downlaod it from here <a href=\"" + link + "\">LINK</a></p>",
 		Recipients: []Recipient{
 			Recipient{
-				Email: "passenger@mailjet.com",
+				Email: tomail,
 			},
 		},
 	}
 	res, err := mailjetClient.SendMail(email)
 	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("Success")
-		fmt.Println(res)
+		log.Err("Error While sending email %v", err)
 	}
+	log.Inf("Mail send successfully to %s", tomail)
+	log.Inf("%s", res)
 }
