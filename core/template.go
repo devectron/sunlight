@@ -52,8 +52,12 @@ const (
       </div>
 		<h4>Select the format of you'r conversion:</h4>
         <select class="custom-select custom-select-sm mb-3" name="type">
-            <option value="pngtojpeg">png to jpeg</option>
-            <option value="imgtopdf">Image to PDF</option>
+            <option value="docxtopdf">DOCX to PDF</option>
+            <option value="pptxtopdf">PPTX to PDF</option>
+            <option value="pdftojpg">PDF to Image</option>
+            <option value="odttopdf">ODT to PDF</option>
+            <option value="xlsxtopdf">XLSX to PDF</option>
+            <option value="epubtopdf">EPUB to PDF</option>
         </select>
         </br>
 		<h4>Choose a file:</h4>
