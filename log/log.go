@@ -22,8 +22,10 @@ var (
 	timeFormat string = "15:04:05"
 )
 
-func Dbg(str string, args ...interface{}) {
-	fmt.Printf("[%s]%s %s\n", time.Now().Format(timeFormat), dbg, fmt.Sprintf(str, args...))
+func Dbg(d bool, str string, args ...interface{}) {
+	if d {
+		fmt.Printf("[%s]%s %s\n", time.Now().Format(timeFormat), dbg, fmt.Sprintf(str, args...))
+	}
 }
 func Inf(str string, args ...interface{}) {
 	fmt.Printf("[%s]%s %s\n", time.Now().Format(timeFormat), inf, fmt.Sprintf(str, args...))

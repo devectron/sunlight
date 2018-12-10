@@ -8,7 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	_ "os"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -16,14 +16,14 @@ import (
 	"github.com/devectron/sunlight/log"
 )
 
-//Server interface.
+// Server interface.
 type Server interface {
 	Index(w http.ResponseWriter, r *http.Request)
 	Convertor(w http.ResponseWriter, r *http.Request)
 	ServeHTTP(http.ResponseWriter, *http.Request)
 }
 
-//Mux mutex.
+// Mux mutex.
 type Mux struct {
 	Server
 	mutex sync.RWMutex
@@ -31,15 +31,7 @@ type Mux struct {
 	data  SiteData
 }
 
-//Config configuration port.
-type Config struct {
-	ServerPort string
-	SqlDbPort  string
-	SqlDbName  string
-	EmailName  string
-}
-
-//SiteData data of the site.
+// SiteData data of the site.
 type SiteData struct {
 	Title     string
 	ErrorBool bool
@@ -49,7 +41,12 @@ type SiteData struct {
 	Token     string
 }
 
-//StartListening listen to a given port.
+// StartListening listen to a given port.
+// upload done
+// convertion TODO
+// SendEmail  TODO
+// Remove Old file TODO
+// Remove Email after 5min TODO
 func StartListening(c Config) {
 	s := SiteData{
 		Title:   "Sunlight | Documents Convertor",
@@ -67,7 +64,7 @@ func StartListening(c Config) {
 	}
 }
 
-//ServeHTTP http handler.
+// ServeHTTP http handler.
 func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "/assets/sunlight.png":
@@ -79,22 +76,13 @@ func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/":
 		m.mutex.RLock()
 		defer m.mutex.RUnlock()
-		log.Inf("Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
-		//_ := r.Cookie("verif")
-		//c := http.Cookie{
-		//	Name:    "verif",
-		//	Value:   base64.StdEncoding.EncodeToString([]byte('1')),
-		//	Path:    "/",
-		//	MaxAge:  86400,
-		//	Expires: time.Now().AddDate(0, 0, 1),
-		//}
-		//r.AddCookie(c)
+		log.Dbg(m.conf.DBG, "Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
 		m.Index(w, r)
 	case "/upload":
 		if r.Method == "POST" {
 			m.mutex.RLock()
 			defer m.mutex.RUnlock()
-			log.Inf("Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
+			log.Dbg(m.conf.DBG, "Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
 			m.Upload(w, r)
 		} else if r.Method == "GET" {
 			io.WriteString(w, "GET is Unsuported method! in /upload")
@@ -102,13 +90,13 @@ func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	default:
 		m.mutex.RLock()
 		defer m.mutex.RUnlock()
-		log.War("Getting unsuported path [ '%s' ] [ '%s' ]", r.URL.Path, r.Method)
+		log.Dbg(m.conf.DBG, "Getting unsuported path [ '%s' ] [ '%s' ]", r.URL.Path, r.Method)
 		log.War("Redirecting to [ '/' ].")
 		http.Redirect(w, r, "/", 302)
 	}
 }
 
-//Index return index page.
+// Index return index page.
 func (m *Mux) Index(w http.ResponseWriter, r *http.Request) {
 	htmlTemplate, err := template.New("index.html").Parse(INDEX)
 	if err != nil {
@@ -120,11 +108,11 @@ func (m *Mux) Index(w http.ResponseWriter, r *http.Request) {
 	token := fmt.Sprintf("%x", h.Sum(nil))
 	m.data.Token = token
 	m.data.Error = "Test"
-	m.data.ErrorBool = true
+	m.data.ErrorBool = false
 	htmlTemplate.Execute(w, m.data)
 }
 
-//Upload upload file.
+// Upload upload file.
 func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(32 << 20) //memory storage
 	file, handler, err := r.FormFile("file")
@@ -138,16 +126,24 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	path := "./tmp/" + handler.Filename
 	err = ioutil.WriteFile(path, data, 0666)
-	log.Inf("Uploading %s %d", handler.Filename, handler.Size)
+	log.Inf("Uploading file %s lenght:%d", handler.Filename, handler.Size)
 	if err != nil {
 		log.Err("Error while writing to the file %v", err)
 	}
-	//t := r.Form["type"]
-	//switch t {
-	//case "pngtojpeg":
-	//	PngToJpeg(path)
-	//case "imgtopdf":
-	//	ImagesToPdf(path)
-	//}
-	go func() { http.Redirect(w, r, "/", 200) }()
+	format := r.Form["type"]
+	log.War("Converting File ...")
+	dstfile, err := Convertor(path, m.conf.ConvertApi, format[0])
+	if err != nil {
+		log.Err("Error while converting file %v", err)
+	}
+	log.Inf("Sending email ...")
+	email := r.PostFormValue("email")
+	SendMail(email, dstfile, m.conf.MailApiPublic, m.conf.MailApiPrivate)
+	log.War("Removing file ...")
+	//	err := os.Remove(path)
+	if err := os.Remove(path); err != nil {
+		log.Err("Error while deleting the file %s %v", path, err)
+	}
+	m.Index(w, r)
+	//http.Redirect(w, r, "/", 200)
 }

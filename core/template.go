@@ -48,11 +48,11 @@ const (
         <div class="input-group-prepend">
           <div class="input-group-text">@</div>
         </div>
-        <input type="email" class="form-control" id="inlineFormInputGroup" placeholder="E-Mail" required>
+        <input type="email" class="form-control" id="inlineFormInputGroup" placeholder="E-Mail" name="email" required>
       </div>
 		<h4>Select the format of you'r conversion:</h4>
         <select class="custom-select custom-select-sm mb-3" name="type">
-            <option value="pngtojpeg">PNG to JPEG</option>
+            <option value="pngtojpeg">png to jpeg</option>
             <option value="imgtopdf">Image to PDF</option>
         </select>
         </br>
