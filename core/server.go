@@ -1,5 +1,10 @@
 package core
 
+// upload done
+// convertion DONE
+// SendEmail  DONE
+// Remove Old file DONE
+// Remove file after 5min TODO
 import (
 	"crypto/md5"
 	//"encoding/base64"
@@ -10,6 +15,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -42,11 +48,6 @@ type SiteData struct {
 }
 
 // StartListening listen to a given port.
-// upload done
-// convertion TODO
-// SendEmail  TODO
-// Remove Old file TODO
-// Remove Email after 5min TODO
 func StartListening(c Config) {
 	s := SiteData{
 		Title:   "Sunlight | Documents Convertor",
@@ -66,27 +67,34 @@ func StartListening(c Config) {
 
 // ServeHTTP http handler.
 func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/assets/sunlight.png":
+	switch {
+	case r.URL.Path == "/assets/sunlight.png":
 		m.mutex.RLock()
 		defer m.mutex.RUnlock()
 		path := r.URL.Path[1:]
 		data, _ := ioutil.ReadFile(string(path))
 		w.Write(data)
-	case "/":
+	case r.URL.Path == "/":
 		m.mutex.RLock()
 		defer m.mutex.RUnlock()
 		log.Dbg(m.conf.DBG, "Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
 		m.Index(w, r)
-	case "/upload":
+	case r.URL.Path == "/upload":
 		if r.Method == "POST" {
 			m.mutex.RLock()
 			defer m.mutex.RUnlock()
 			log.Dbg(m.conf.DBG, "Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
 			m.Upload(w, r)
 		} else if r.Method == "GET" {
-			io.WriteString(w, "GET is Unsuported method! in /upload")
+			io.WriteString(w, "GET is Unsuported method! in /upload use POST instead.")
 		}
+	case strings.Contains(r.URL.Path, "/files/"):
+		log.Dbg(m.conf.DBG, "Requesting ['%s'] with ['%s']", r.URL.Path, r.Method)
+		f := strings.Replace(r.URL.Path, "/files/", "", 1)
+		if _, err := os.Stat("./tmp/" + f); os.IsNotExist(err) {
+			io.WriteString(w, "<h1>No file with that name!</h1>")
+		}
+		m.HandleFileDownload(w, r, "./tmp/"+f)
 	default:
 		m.mutex.RLock()
 		defer m.mutex.RUnlock()
@@ -140,10 +148,19 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	email := r.PostFormValue("email")
 	SendMail(email, dstfile, m.conf.MailApiPublic, m.conf.MailApiPrivate)
 	log.War("Removing file ...")
-	//	err := os.Remove(path)
 	if err := os.Remove(path); err != nil {
 		log.Err("Error while deleting the file %s %v", path, err)
 	}
 	m.Index(w, r)
-	//http.Redirect(w, r, "/", 200)
+}
+
+func (m *Mux) HandleFileDownload(w http.ResponseWriter, r *http.Request, file string) {
+	data, _ := ioutil.ReadFile(string(file))
+	switch {
+	case strings.HasSuffix(file, "jpg") || strings.HasSuffix(file, "jpeg") || strings.HasSuffix(file, "png"):
+		r.Header.Add("Content-type", "image/*")
+	case strings.HasSuffix(file, "pdf"):
+		r.Header.Add("Content-type", "application/pdf")
+	}
+	w.Write(data)
 }

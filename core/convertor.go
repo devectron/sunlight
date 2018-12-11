@@ -19,6 +19,6 @@ func Convertor(srcfile string, apisecret string, format string) (string, error) 
 	if err != nil {
 		return "", err[0]
 	}
-	log.Inf("File saved to: ", files[0].Name())
+	log.Inf("File saved to: %s", files[0].Name())
 	return files[0].Name(), nil
 }
