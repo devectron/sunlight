@@ -61,7 +61,8 @@ func StartListening(c Config) {
 	http.HandleFunc("/", m.Index)
 	http.HandleFunc("/upload", m.Upload)
 	http.HandleFunc("/files/", m.HandleFileDownload)
-	http.HandleFunc("/assets/sunlight.png", m.HandleImage)
+	http.HandleFunc("../assets/sunlight.png", m.HandleImage)
+	http.HandleFunc("/favicon.ico", nil)
 	log.Inf("Listening on: localhost:%s", c.ServerPort)
 	err := http.ListenAndServe(":"+c.ServerPort, nil)
 	if err != nil {
