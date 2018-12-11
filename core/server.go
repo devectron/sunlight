@@ -26,7 +26,7 @@ import (
 type Server interface {
 	Index(w http.ResponseWriter, r *http.Request)
 	Convertor(w http.ResponseWriter, r *http.Request)
-	ServeHTTP(http.ResponseWriter, *http.Request)
+	//ServeHTTP(http.ResponseWriter, *http.Request)
 }
 
 // Mux mutex.
@@ -58,11 +58,22 @@ func StartListening(c Config) {
 		conf: c,
 		data: s,
 	}
+	http.HandleFunc("/", m.Index)
+	http.HandleFunc("/upload", m.Upload)
+	http.HandleFunc("/files/", m.HandleFileDownload)
+	http.HandleFunc("/assets/sunlight.png", m.HandleImage)
 	log.Inf("Listening on: localhost:%s", c.ServerPort)
-	err := http.ListenAndServe(":"+c.ServerPort, m)
+	err := http.ListenAndServe(":"+c.ServerPort, nil)
 	if err != nil {
 		log.Err("%v", err)
 	}
+}
+func (m *Mux) HandleImage(w http.ResponseWriter, r *http.Request) {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+	path := r.URL.Path[1:]
+	data, _ := ioutil.ReadFile(string(path))
+	w.Write(data)
 }
 
 // ServeHTTP http handler.
@@ -94,7 +105,7 @@ func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if _, err := os.Stat("./tmp/" + f); os.IsNotExist(err) {
 			io.WriteString(w, "<h1>No file with that name!</h1>")
 		}
-		m.HandleFileDownload(w, r, "./tmp/"+f)
+		m.HandleFileDownload(w, r)
 	default:
 		m.mutex.RLock()
 		defer m.mutex.RUnlock()
@@ -106,6 +117,9 @@ func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Index return index page.
 func (m *Mux) Index(w http.ResponseWriter, r *http.Request) {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+	log.Dbg(m.conf.DBG, "Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
 	htmlTemplate, err := template.New("index.html").Parse(INDEX)
 	if err != nil {
 		log.Err("Error html parser %v", err)
@@ -122,44 +136,58 @@ func (m *Mux) Index(w http.ResponseWriter, r *http.Request) {
 
 // Upload upload file.
 func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(32 << 20) //memory storage
-	file, handler, err := r.FormFile("file")
-	if err != nil {
-		log.Err("Error While uploading file %v", err)
+	if r.Method == "POST" {
+		m.mutex.RLock()
+		defer m.mutex.RUnlock()
+		log.Dbg(m.conf.DBG, "Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
+		r.ParseMultipartForm(32 << 20) //memory storage
+		file, handler, err := r.FormFile("file")
+		if err != nil {
+			log.Err("Error While uploading file %v", err)
+		}
+		defer file.Close()
+		data, err := ioutil.ReadAll(file)
+		if err != nil {
+			log.Err("Error while reading data %v", err)
+		}
+		path := "./tmp/" + handler.Filename
+		err = ioutil.WriteFile(path, data, 0666)
+		log.Inf("Uploading file %s lenght:%d", handler.Filename, handler.Size)
+		if err != nil {
+			log.Err("Error while writing to the file %v", err)
+		}
+		format := r.Form["type"]
+		log.War("Converting File ...")
+		dstfile, err := Convertor(path, m.conf.ConvertApi, format[0])
+		if err != nil {
+			log.Err("Error while converting file %v", err)
+		}
+		log.Inf("Sending email ...")
+		email := r.PostFormValue("email")
+		SendMail(email, r.URL.Scheme+"://"+r.URL.Host+"/files/"+dstfile, m.conf.MailApiPublic, m.conf.MailApiPrivate)
+		log.War("Removing file ...")
+		if err := os.Remove(path); err != nil {
+			log.Err("Error while deleting the file %s %v", path, err)
+		}
+		m.Index(w, r)
+	} else if r.Method == "GET" {
+		io.WriteString(w, "GET is Unsuported method! in /upload use POST instead.")
 	}
-	defer file.Close()
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Err("Error while reading data %v", err)
-	}
-	path := "./tmp/" + handler.Filename
-	err = ioutil.WriteFile(path, data, 0666)
-	log.Inf("Uploading file %s lenght:%d", handler.Filename, handler.Size)
-	if err != nil {
-		log.Err("Error while writing to the file %v", err)
-	}
-	format := r.Form["type"]
-	log.War("Converting File ...")
-	dstfile, err := Convertor(path, m.conf.ConvertApi, format[0])
-	if err != nil {
-		log.Err("Error while converting file %v", err)
-	}
-	log.Inf("Sending email ...")
-	email := r.PostFormValue("email")
-	SendMail(email, r.URL.Scheme+"://"+r.URL.Host+"/files/"+dstfile, m.conf.MailApiPublic, m.conf.MailApiPrivate)
-	log.War("Removing file ...")
-	if err := os.Remove(path); err != nil {
-		log.Err("Error while deleting the file %s %v", path, err)
-	}
-	m.Index(w, r)
 }
 
-func (m *Mux) HandleFileDownload(w http.ResponseWriter, r *http.Request, file string) {
-	data, _ := ioutil.ReadFile(string(file))
+func (m *Mux) HandleFileDownload(w http.ResponseWriter, r *http.Request) {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+	log.Dbg(m.conf.DBG, "Requesting ['%s'] with ['%s']", r.URL.Path, r.Method)
+	f := strings.Replace(r.URL.Path, "/files/", "", 1)
+	if _, err := os.Stat("./tmp/" + f); os.IsNotExist(err) {
+		io.WriteString(w, "<h1>No file with that name!</h1>")
+	}
+	data, _ := ioutil.ReadFile(string(f))
 	switch {
-	case strings.HasSuffix(file, "jpg") || strings.HasSuffix(file, "jpeg") || strings.HasSuffix(file, "png"):
+	case strings.HasSuffix(f, "jpg") || strings.HasSuffix(f, "jpeg") || strings.HasSuffix(f, "png"):
 		r.Header.Add("Content-type", "image/*")
-	case strings.HasSuffix(file, "pdf"):
+	case strings.HasSuffix(f, "pdf"):
 		r.Header.Add("Content-type", "application/pdf")
 	}
 	w.Write(data)
