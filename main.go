@@ -22,7 +22,7 @@ func main() {
 }
 func config() core.Config {
 	serverPort := os.Getenv("SERVER_PORT")
-	sqlPort := os.Getenv("SQL_PORT")
+	sqlPort := os.Getenv("PORT")
 	sqlDbName := os.Getenv("SQL_DB_NAME")
 	mailApiPublic := os.Getenv("MAILJET_PUBLIC")
 	mailapiPrivate := os.Getenv("MAILJET_PRIVATE")
