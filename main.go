@@ -28,8 +28,8 @@ func config() core.Config {
 	mailapiPrivate := os.Getenv("MAILJET_PRIVATE")
 	convertApi := os.Getenv("CONVERT_API")
 	if serverPort == "" {
-		log.War("No $SERVER_PORT found using the default :7375")
-		serverPort = "5000"
+		log.War("No $SERVER_PORT found using the default :5000")
+		serverPort = "3171"
 	}
 	if sqlPort == "" {
 		log.War("No $SQL_PORT found.")
