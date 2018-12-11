@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"io"
+	"net/http"
 	"os"
 
 	"github.com/devectron/sunlight/core"
@@ -18,7 +20,15 @@ func init() {
 func main() {
 	log.Inf("Starting [ Sunlight -v%s ]", core.VERSION)
 	log.Dbg(dbg, "Debuging enabled")
-	core.StartListening(config())
+	http.HandleFunc("/", index)
+	err := http.ListenAndServe(":7375", nil)
+	if err != nil {
+		log.Err("%v", err)
+	}
+	//core.StartListening(config())
+}
+func index(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "<h1>No file with that name!</h1>")
 }
 func config() core.Config {
 	serverPort := os.Getenv("SERVER_PORT")
