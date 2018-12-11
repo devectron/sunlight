@@ -24,7 +24,7 @@ func SendMail(tomail string, link string, publicapi string, privateapi string) {
 			},
 		},
 	}
-	res, err := mailjetClient.SendMail(email)
+	_, err := mailjetClient.SendMail(email)
 	if err != nil {
 		log.Err("Error While sending email %v", err)
 	}
