@@ -63,7 +63,7 @@ func StartListening(c Config) {
 	http.HandleFunc("/files/", m.HandleFileDownload)
 	http.HandleFunc("../assets/sunlight.png", m.HandleImage)
 	http.HandleFunc("/favicon.ico", nil)
-	log.Inf("Listening on: localhost:%s", c.ServerPort)
+	log.Inf("Listening on: 0.0.0.:%s", c.ServerPort)
 	err := http.ListenAndServe(":"+c.ServerPort, nil)
 	if err != nil {
 		log.Err("%v", err)

@@ -29,7 +29,7 @@ func config() core.Config {
 	convertApi := os.Getenv("CONVERT_API")
 	if serverPort == "" {
 		log.War("No $SERVER_PORT found using the default :5000")
-		serverPort = "3171"
+		serverPort = "5000"
 	}
 	if sqlPort == "" {
 		log.War("No $SQL_PORT found.")
