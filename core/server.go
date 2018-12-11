@@ -146,7 +146,7 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Inf("Sending email ...")
 	email := r.PostFormValue("email")
-	SendMail(email, dstfile, m.conf.MailApiPublic, m.conf.MailApiPrivate)
+	SendMail(email, r.URL.Scheme+"://"+r.URL.Host+"/files/"+dstfile, m.conf.MailApiPublic, m.conf.MailApiPrivate)
 	log.War("Removing file ...")
 	if err := os.Remove(path); err != nil {
 		log.Err("Error while deleting the file %s %v", path, err)
