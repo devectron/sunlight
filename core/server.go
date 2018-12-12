@@ -4,10 +4,9 @@ package core
 // convertion DONE
 // SendEmail  DONE
 // Remove Old file DONE
-// Remove file after 5min TODO
+// Remove file after 5min DONE
 import (
 	"crypto/md5"
-	//"encoding/base64"
 	"fmt"
 	"html/template"
 	"io"
@@ -148,8 +147,8 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Inf("Sending email ...")
 	email := r.PostFormValue("email")
-	dstfile = strings.Split(dstfile, "./tmp/")
-	pathmail := "https://stark-wave-19861.herokuapp.com/files/" + dstfile[0]
+	d := strings.Split(dstfile, "./tmp/")
+	pathmail := "https://stark-wave-19861.herokuapp.com/files/" + d[0]
 	SendMail(email, pathmail, m.conf.MailApiPublic, m.conf.MailApiPrivate)
 	log.War("Removing %s file ...", path)
 	if err := os.Remove(path); err != nil {
