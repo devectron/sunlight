@@ -133,7 +133,7 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Err("Error while reading data %v", err)
 	}
-	path := "./tmp/" + handler.Filename
+	path := "tmp/" + handler.Filename
 	err = ioutil.WriteFile(path, data, 0666)
 	log.Inf("Uploading file %s lenght:%d", handler.Filename, handler.Size)
 	if err != nil {
@@ -147,8 +147,8 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Inf("Sending email ...")
 	email := r.PostFormValue("email")
-	d := strings.Split(dstfile, "./tmp/")
-	pathmail := "https://stark-wave-19861.herokuapp.com/files/" + d[0]
+	d := strings.Split(dstfile, "tmp/")
+	pathmail := "https://stark-wave-19861.herokuapp.com/files/" + d[1]
 	SendMail(email, pathmail, m.conf.MailApiPublic, m.conf.MailApiPrivate)
 	log.War("Removing %s file ...", path)
 	if err := os.Remove(path); err != nil {
@@ -156,8 +156,8 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	time.AfterFunc(1*time.Minute, func() {
 		log.War("Removing %s after been converted about an 5 min ago", dstfile)
-		if err := os.Remove(path); err != nil {
-			log.Err("No file name with name %s", path)
+		if err := os.Remove(dstfile); err != nil {
+			log.Err("No file name with name %s", dstfile)
 		}
 	})
 	m.Index(w, r)
