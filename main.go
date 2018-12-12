@@ -13,6 +13,9 @@ var dbg bool
 func init() {
 	flag.BoolVar(&dbg, "dbg", false, "Debug")
 	flag.Parse()
+	if _, err := os.Stat("tmp"); os.IsNotExist(err) {
+		os.Mkdir("tmp", 0666)
+	}
 }
 
 func main() {

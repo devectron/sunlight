@@ -148,11 +148,19 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Inf("Sending email ...")
 	email := r.PostFormValue("email")
-	SendMail(email, r.URL.Scheme+"://"+r.URL.Host+"/files/"+dstfile, m.conf.MailApiPublic, m.conf.MailApiPrivate)
-	log.War("Removing file ...")
+	dstfile = strings.Split(dstfile, "./tmp/")
+	pathmail := "https://stark-wave-19861.herokuapp.com/files/" + dstfile[0]
+	SendMail(email, pathmail, m.conf.MailApiPublic, m.conf.MailApiPrivate)
+	log.War("Removing %s file ...", path)
 	if err := os.Remove(path); err != nil {
 		log.Err("Error while deleting the file %s %v", path, err)
 	}
+	time.AfterFunc(1*time.Minute, func() {
+		log.War("Removing %s after been converted about an 5 min ago", dstfile)
+		if err := os.Remove(path); err != nil {
+			log.Err("No file name with name %s", path)
+		}
+	})
 	m.Index(w, r)
 }
 

@@ -26,34 +26,6 @@
   revision = "4597cb4aae1236575fcd3f7c09544191e1e0aa35"
   version = "2.4.5"
 
-[[projects]]
-  digest = "1:69b0833556092b254b0a86b54b2e7ab67da115ffcf0b2a3751dde840a65a3a65"
-  name = "github.com/unidoc/unidoc"
-  packages = [
-    "common",
-    "common/license",
-    "pdf/contentstream",
-    "pdf/contentstream/draw",
-    "pdf/core",
-    "pdf/creator",
-    "pdf/model",
-    "pdf/model/fonts",
-    "pdf/model/sampling",
-    "pdf/model/textencoding",
-    "pdf/ps",
-  ]
-  pruneopts = "UT"
-  revision = "2752beb6f0cdbae03254246e8f26f1e3455518c8"
-  version = "v2.2.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:de6078be7bbedf02bf7235cda239bba1fdce01b5605ddeb3bb4ec39bed6f1859"
-  name = "golang.org/x/image"
-  packages = ["tiff/lzw"]
-  pruneopts = "UT"
-  revision = "cd38e8056d9b27bb2f265effa37fb0ea6b8a7f0f"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -62,7 +34,6 @@
     "github.com/ConvertAPI/convertapi-go/config",
     "github.com/ConvertAPI/convertapi-go/param",
     "github.com/mailjet/mailjet-apiv3-go",
-    "github.com/unidoc/unidoc/pdf/creator",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
