@@ -133,7 +133,7 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Err("Error while reading data %v", err)
 	}
-	path := "tmp/" + handler.Filename
+	path := "/tmp/" + handler.Filename
 	err = ioutil.WriteFile(path, data, 0666)
 	log.Inf("Uploading file %s lenght:%d", handler.Filename, handler.Size)
 	if err != nil {
@@ -147,7 +147,7 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Inf("Sending email ...")
 	email := r.PostFormValue("email")
-	d := strings.Split(dstfile, "tmp/")
+	d := strings.Replace(dstfile, "/tmp/", "", 1)
 	pathmail := "https://stark-wave-19861.herokuapp.com/files/" + d[1]
 	SendMail(email, pathmail, m.conf.MailApiPublic, m.conf.MailApiPrivate)
 	log.War("Removing %s file ...", path)
@@ -165,7 +165,7 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 
 func (m *Mux) HandleFileDownload(w http.ResponseWriter, r *http.Request) {
 	f := strings.Replace(r.URL.Path, "/files/", "", 1)
-	if _, err := os.Stat("./tmp/" + f); os.IsNotExist(err) {
+	if _, err := os.Stat("/tmp/" + f); os.IsNotExist(err) {
 		io.WriteString(w, "<h1>No file with that name!</h1>")
 	}
 	data, _ := ioutil.ReadFile(string(f))

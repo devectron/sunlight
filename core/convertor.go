@@ -15,7 +15,7 @@ func Convertor(srcfile string, apisecret string, format string) (string, error) 
 	config.Default.Secret = apisecret
 	fileParam := param.NewPath("file", srcfile, nil)
 	pdfRes := convertapi.ConvDef(f[0], f[1], fileParam)
-	files, err := pdfRes.ToPath("tmp")
+	files, err := pdfRes.ToPath("/tmp")
 	if err != nil {
 		return "", err[0]
 	}
