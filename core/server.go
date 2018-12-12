@@ -148,7 +148,7 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	log.Inf("Sending email ...")
 	email := r.PostFormValue("email")
 	d := strings.Replace(dstfile, "/tmp/", "", 1)
-	pathmail := "https://stark-wave-19861.herokuapp.com/files/" + d[1]
+	pathmail := "https://stark-wave-19861.herokuapp.com/files/" + d
 	SendMail(email, pathmail, m.conf.MailApiPublic, m.conf.MailApiPrivate)
 	log.War("Removing %s file ...", path)
 	if err := os.Remove(path); err != nil {
