@@ -6,6 +6,7 @@ import (
 
 	"github.com/devectron/sunlight/core"
 	"github.com/devectron/sunlight/log"
+	"google.golang.org/appengine"
 )
 
 var dbg bool
@@ -22,6 +23,7 @@ func main() {
 	log.Inf("Starting [ Sunlight -v%s ]", core.VERSION)
 	log.Dbg(dbg, "Debuging enabled")
 	core.StartListening(config())
+	appengine.Main()
 }
 func config() core.Config {
 	serverPort := os.Getenv("SERVER_PORT")

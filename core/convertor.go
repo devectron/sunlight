@@ -19,6 +19,7 @@ func Convertor(srcfile string, apisecret string, format string) (string, error) 
 	if err != nil {
 		return "", err[0]
 	}
+	// need to return file[0].ParamReader.reader
 	log.Inf("File saved to: %s", files[0].Name())
 	return files[0].Name(), nil
 }
