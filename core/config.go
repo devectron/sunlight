@@ -13,7 +13,7 @@ type Config struct {
 }
 
 const (
-	VERSION = "0.9.0"
-	AUTHOR  = "hihebark"
+	VERSION = "1.0.0"
+	AUTHOR  = "[hihebark] and the teams"
 	MAIL    = "n.amara@prtonmail.ch"
 )

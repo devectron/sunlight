@@ -6,7 +6,6 @@ import (
 
 	"github.com/devectron/sunlight/core"
 	"github.com/devectron/sunlight/log"
-	"google.golang.org/appengine"
 )
 
 var dbg bool
@@ -14,16 +13,12 @@ var dbg bool
 func init() {
 	flag.BoolVar(&dbg, "dbg", false, "Debug")
 	flag.Parse()
-	if _, err := os.Stat("tmp"); os.IsNotExist(err) {
-		os.Mkdir("tmp", 0666)
-	}
 }
 
 func main() {
 	log.Inf("Starting [ Sunlight -v%s ]", core.VERSION)
 	log.Dbg(dbg, "Debuging enabled")
 	core.StartListening(config())
-	appengine.Main()
 }
 func config() core.Config {
 	serverPort := os.Getenv("SERVER_PORT")

@@ -1,10 +1,5 @@
 package core
 
-// upload done
-// convertion DONE
-// SendEmail  DONE
-// Remove Old file DONE
-// Remove file after 5min DONE
 import (
 	"crypto/md5"
 	"fmt"
@@ -14,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -41,7 +35,9 @@ type Mux struct {
 type SiteData struct {
 	Title     string
 	ErrorBool bool
+	InfBool   bool
 	Error     string
+	Inf       string
 	NbrConv   int
 	Users     string
 	Token     string
@@ -88,13 +84,6 @@ func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		} else if r.Method == "GET" {
 			io.WriteString(w, "GET is Unsuported method! in /upload use POST instead.")
 		}
-	case strings.Contains(r.URL.Path, "/files/"):
-		log.Dbg(m.conf.DBG, "Requesting ['%s'] with ['%s']", r.URL.Path, r.Method)
-		f := strings.Replace(r.URL.Path, "/files/", "", 1)
-		if _, err := os.Stat("./tmp/" + f); os.IsNotExist(err) {
-			io.WriteString(w, "<h1>No file with that name!</h1>")
-		}
-		m.HandleFileDownload(w, r)
 	default:
 		m.mutex.RLock()
 		defer m.mutex.RUnlock()
@@ -124,56 +113,40 @@ func (m *Mux) Index(w http.ResponseWriter, r *http.Request) {
 func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	log.Dbg(m.conf.DBG, "Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
 	r.ParseMultipartForm(32 << 20) //memory storage
-	file, handler, err := r.FormFile("file")
+	file, _, err := r.FormFile("file")
 	if err != nil {
 		log.Err("Error While uploading file %v", err)
 	}
 	defer file.Close()
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Err("Error while reading data %v", err)
-	}
-	path := "/tmp/" + handler.Filename
-	err = ioutil.WriteFile(path, data, 0666)
-	log.Inf("Uploading file %s lenght:%d", handler.Filename, handler.Size)
-	if err != nil {
-		log.Err("Error while writing to the file %v", err)
-	}
+	//data, err := ioutil.ReadAll(file)
+	//if err != nil {
+	//	log.Err("Error while reading data %v", err)
+	//}
+	//path := "/tmp/" + handler.Filename
+	//err = ioutil.WriteFile(path, data, 0666)
+	//log.Inf("Uploading file %s lenght:%d", handler.Filename, handler.Size)
+	//if err != nil {
+	//	log.Err("Error while writing to the file %v", err)
+	//}
 	format := r.Form["type"]
-	log.War("Converting File ...")
-	dstfile, err := Convertor(path, m.conf.ConvertApi, format[0])
+	//log.War("Converting File ...")
+	//result, err := Convertor(path, m.conf.ConvertApi, format[0])
+	//if err != nil {
+	//	m.data.Error = "converting"
+	//	m.data.ErrorBool = true
+	//	log.Err("Error while converting file %v", err)
+	//}
+	result := ConvertorR(file, m.conf.ConvertApi, format[0])
 	if err != nil {
-		log.Err("Error while converting file %v", err)
+		log.Err("Error %v", err)
 	}
 	log.Inf("Sending email ...")
 	email := r.PostFormValue("email")
-	d := strings.Replace(dstfile, "/tmp/", "", 1)
-	pathmail := "https://stark-wave-19861.herokuapp.com/files/" + d
-	SendMail(email, pathmail, m.conf.MailApiPublic, m.conf.MailApiPrivate)
-	log.War("Removing %s file ...", path)
-	if err := os.Remove(path); err != nil {
-		log.Err("Error while deleting the file %s %v", path, err)
+	u, err := result.Urls()
+	if err != nil {
+		log.Err("Error %v", err)
 	}
-	time.AfterFunc(1*time.Minute, func() {
-		log.War("Removing %s after been converted about an 5 min ago", dstfile)
-		if err := os.Remove(dstfile); err != nil {
-			log.Err("No file name with name %s", dstfile)
-		}
-	})
+	log.Inf("URL %v", u)
+	SendMail(email, u[0], m.conf.MailApiPublic, m.conf.MailApiPrivate)
 	m.Index(w, r)
-}
-
-func (m *Mux) HandleFileDownload(w http.ResponseWriter, r *http.Request) {
-	f := strings.Replace(r.URL.Path, "/files/", "", 1)
-	if _, err := os.Stat("/tmp/" + f); os.IsNotExist(err) {
-		io.WriteString(w, "<h1>No file with that name!</h1>")
-	}
-	data, _ := ioutil.ReadFile(string(f))
-	switch {
-	case strings.HasSuffix(f, "jpg") || strings.HasSuffix(f, "jpeg") || strings.HasSuffix(f, "png"):
-		r.Header.Add("Content-type", "image/*")
-	case strings.HasSuffix(f, "pdf"):
-		r.Header.Add("Content-type", "application/pdf")
-	}
-	w.Write(data)
 }

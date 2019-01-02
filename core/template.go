@@ -72,6 +72,15 @@ const (
         <br>
         <button type="submit" class="btn btn-primary float-right">Convert <i class="fa fa-check"></i></button>
     </form>
+	{{if .InfBool}}
+		<div class="alert alert-warning alert-success fade show" role="alert">
+			<strong>Info:</strong> {{.Inf}}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	{{else}}
+	{{end}}
 	{{if .ErrorBool}}
 		<div class="alert alert-warning alert-dismissible fade show" role="alert">
 			<strong>Error:</strong> {{.Error}}
