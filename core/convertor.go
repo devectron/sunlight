@@ -1,7 +1,6 @@
 package core
 
 import (
-	"io"
 	"strings"
 
 	"github.com/ConvertAPI/convertapi-go"

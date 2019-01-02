@@ -113,30 +113,29 @@ func (m *Mux) Index(w http.ResponseWriter, r *http.Request) {
 func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	log.Dbg(m.conf.DBG, "Requesting ['%s'] with: ['%s']", r.URL.Path, r.Method)
 	r.ParseMultipartForm(32 << 20) //memory storage
-	file, _, err := r.FormFile("file")
+	file, handler, err := r.FormFile("file")
 	if err != nil {
 		log.Err("Error While uploading file %v", err)
 	}
 	defer file.Close()
-	//data, err := ioutil.ReadAll(file)
-	//if err != nil {
-	//	log.Err("Error while reading data %v", err)
-	//}
-	//path := "/tmp/" + handler.Filename
-	//err = ioutil.WriteFile(path, data, 0666)
-	//log.Inf("Uploading file %s lenght:%d", handler.Filename, handler.Size)
-	//if err != nil {
-	//	log.Err("Error while writing to the file %v", err)
-	//}
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Err("Error while reading data %v", err)
+	}
+	path := "/tmp/" + handler.Filename
+	err = ioutil.WriteFile(path, data, 0666)
+	log.Inf("Uploading file %s lenght:%d", handler.Filename, handler.Size)
+	if err != nil {
+		log.Err("Error while writing to the file %v", err)
+	}
 	format := r.Form["type"]
-	//log.War("Converting File ...")
-	//result, err := Convertor(path, m.conf.ConvertApi, format[0])
-	//if err != nil {
-	//	m.data.Error = "converting"
-	//	m.data.ErrorBool = true
-	//	log.Err("Error while converting file %v", err)
-	//}
-	result := ConvertorR(file, m.conf.ConvertApi, format[0])
+	log.War("Converting File ...")
+	result, err := Convertor(path, m.conf.ConvertApi, format[0])
+	if err != nil {
+		m.data.Error = "converting"
+		m.data.ErrorBool = true
+		log.Err("Error while converting file %v", err)
+	}
 	if err != nil {
 		log.Err("Error %v", err)
 	}
