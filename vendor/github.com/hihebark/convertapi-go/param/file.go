@@ -2,7 +2,8 @@ package param
 
 import (
 	"fmt"
-	"github.com/ConvertAPI/convertapi-go/config"
+	"github.com/hihebark/convertapi-go/config"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,6 +19,11 @@ func NewFile(name string, file *os.File, conf *config.Config) *ParamFile {
 	return &ParamFile{*paramReader, file.Name()}
 }
 
+func NewFileReader(name string, reader io.Reader, conf *config.Config) *ParamFile {
+	paramReader := NewReader("file", reader, name, conf)
+	return &ParamFile{*paramReader, ""}
+}
+
 func NewPath(name string, path string, conf *config.Config) IParam {
 	file, err := os.Open(path)
 	if err != nil {
@@ -27,6 +33,9 @@ func NewPath(name string, path string, conf *config.Config) IParam {
 }
 
 func (this *ParamFile) Prepare() error {
+	if this.filePath == "" {
+		return this.ParamReader.Prepare()
+	}
 	file, err := os.Open(this.filePath)
 	if err != nil {
 		return err

@@ -3,8 +3,8 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2679e2ae14d371eb347bdb44cc049c4bbf422c36bee2e74c071223ffe1b794cc"
-  name = "github.com/ConvertAPI/convertapi-go"
+  digest = "1:7ca028a0e79e81ceeb78ec41ba8d93e17dae1f634d3271315b60789619536b66"
+  name = "github.com/hihebark/convertapi-go"
   packages = [
     ".",
     "config",
@@ -12,7 +12,7 @@
     "param",
   ]
   pruneopts = "UT"
-  revision = "a822cefe0641ce45c4acd7a59c8b4f1266aeb196"
+  revision = "dd19b84008225bb0cfdcb7b9544f8a6b33be4b67"
 
 [[projects]]
   digest = "1:b640f196e31078d2ff78476ccb4487b5ac71c7a6f5be8ca2b7f5bb45cd215a07"
@@ -30,9 +30,9 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/ConvertAPI/convertapi-go",
-    "github.com/ConvertAPI/convertapi-go/config",
-    "github.com/ConvertAPI/convertapi-go/param",
+    "github.com/hihebark/convertapi-go",
+    "github.com/hihebark/convertapi-go/config",
+    "github.com/hihebark/convertapi-go/param",
     "github.com/mailjet/mailjet-apiv3-go",
   ]
   solver-name = "gps-cdcl"

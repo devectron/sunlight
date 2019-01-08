@@ -118,34 +118,35 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 		log.Err("Error While uploading file %v", err)
 	}
 	defer file.Close()
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Err("Error while reading data %v", err)
-	}
-	path := "/tmp/" + handler.Filename
-	err = ioutil.WriteFile(path, data, 0666)
+	//data, err := ioutil.ReadAll(file)
+	//if err != nil {
+	//	log.Err("Error while reading data %v", err)
+	//}
+	//path := "/tmp/" + handler.Filename
+	//err = ioutil.WriteFile(path, data, 0666)
 	log.Inf("Uploading file %s lenght:%d", handler.Filename, handler.Size)
-	if err != nil {
-		log.Err("Error while writing to the file %v", err)
-	}
+	//if err != nil {
+	//	log.Err("Error while writing to the file %v", err)
+	//}
 	format := r.Form["type"]
 	log.War("Converting File ...")
-	result, err := Convertor(path, m.conf.ConvertApi, format[0])
+	//result, err := Convertor(path, m.conf.ConvertApi, format[0])
+	//srcfile io.Reader, apisecret, format string
+	result, err := ConvertorR(file, handler.Filename, m.conf.ConvertApi, format[0])
 	if err != nil {
 		m.data.Error = "converting"
 		m.data.ErrorBool = true
 		log.Err("Error while converting file %v", err)
 	}
-	if err != nil {
-		log.Err("Error %v", err)
-	}
-	log.Inf("Sending email ...")
-	email := r.PostFormValue("email")
 	u, err := result.Urls()
 	if err != nil {
-		log.Err("Error %v", err)
+		log.Err("Error while getting url %v", err)
 	}
-	log.Inf("URL %v", u)
-	SendMail(email, u[0], m.conf.MailApiPublic, m.conf.MailApiPrivate)
+	//log.Inf("URL: %v", u)
+	if len(u) != 0 {
+		log.Inf("Sending email ...")
+		email := r.PostFormValue("email")
+		SendMail(email, u[0], m.conf.MailApiPublic, m.conf.MailApiPrivate)
+	}
 	m.Index(w, r)
 }
