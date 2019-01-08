@@ -31,29 +31,26 @@
 -	Quand le document a été converti, un message (facultativement : un e-mail) est envoyé à l'utilisateur avec le lien.
 -	Pour chaque utilisateur, il est possible de réaliser seulement 2 conversions à la fois.
 
-### L'architecture global de l'application :
+### L'architecture global de l'application:
 Spring MVC est la bibliothèque d'infrastructure Spring traditionnelle pour la création d'applications Web Java, la structure Spring Web`MVC` fournit une architecture modèle-vue-contrôleur ([MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)) et des composants prêts à l'emploi qui peuvent être utilisés pour développer des applications Web flexibles et des petits services, c'est pour cela qu'on a opté pour l'architecture `MVC` que l'architecture micro-services qui est utilisée dans les grands projects, et cela ne reflète pas sur le travaille demandé.
 ![architecture](assets/archi.png)
 
-1. View: notre front-end (fondamentalement `JSP` code).
+1. View: notre front-end (fondamentalement `HTML` code).
 2. Controller: gérer les demandes `HTTP` (`POST`, `GET`).
 3. Core: C'est le noyau de l'application qui gère la suppression des fichiers, envoi un e-mail au clients et la conversion des fichiers.
  
 ![class](assets/class.png)
 
-### L'architecture de la couche des données :
+### Manière de gestion des demandes:
+La maniere la plus efficace c'est d'utiliser `RWMutex` du package `sync` qui gere les `synchronisation` d'ou l'utilisation de plusieurs process (processus legers) permet de paralléliser le traitement et de l'executer rapidement.
 
-
-### Manière de gestion des demandes :
-La maniere la plus efficace c'est d'utiliser `TaskExecutor` du package spring qui gere les `threads` d'ou l'utilisation de plusieurs threads (processus legers) permet de paralléliser le traitement et de l'executer rapidement.
-
-### Technologies choisis pour développer l'application :
-- Platforme de déploiement Cloud [openshift](https://openshift.io/) qui offre un plan OnlineStarter d'ou cette solution est gratuite et permet de créer deux conteneurs de `Kubernetes` de 1GB .
-- [Spring MVC](https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html) à l'aide de `Spring Boot` et `Spring Initializr`.
-- [Spring Cloud](https://spring.io/projects/spring-cloud#overview) qui se base sur `Spring Boot` et qui offre les outils nécessaires pour concevoir une application `Cloud Ready`
-- [Tomcat](http://tomcat.apache.org/) d'ou `Spring Boot` inclura et configurera automatiquement `Tomcat` dans le cadre de l'exécution de l'application.
--  Langage Java,Platforme IntelliJ
--  Tirer part de la librairie [Documents4J](http://documents4j.com/) qui offre plusieurs types de conversion de documents.
+### Technologies choisis pour développer l'application:
+- Platforme de déploiement Cloud [heroku](https://www.heroku.com/) qui est une plateforme en tant que service (PaaS) permettant de déployer des applications sur le Cloud très facilement. 
+- [Go](https://golang.org/).
+- [convertapi](http://github.com/hihebark/convertapi-go) a fork from [convertapi](https://github.com/ConvertAPI/convertapi-go/)
+- Langage Go,Platforme Vim.
+- Convertion API [http://convertapi.com/](http://convertapi.com/) qui offre plusieurs types de conversion de documents.
+- Email API [mailjet](https://www.mailjet.com/)
 
 ### Screenshot:
 ![screenshot](assets/sunlight-screenshot.png)
