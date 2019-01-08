@@ -52,6 +52,9 @@ La maniere la plus efficace c'est d'utiliser `TaskExecutor` du package spring qu
 - Platforme de déploiement Cloud [openshift](https://openshift.io/) qui offre un plan OnlineStarter d'ou cette solution est gratuite et permet de créer deux conteneurs de `Kubernetes` de 1GB .
 - [Spring MVC](https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html) à l'aide de `Spring Boot` et `Spring Initializr`.
 - [Spring Cloud](https://spring.io/projects/spring-cloud#overview) qui se base sur `Spring Boot` et qui offre les outils nécessaires pour concevoir une application `Cloud Ready`
-- [Tomcat](http://tomcat.apache.org/) d'ou `Spring Boot` inclura et configurera automatiquement `Tomcat` dans le cadre de l'exécution de l'application .
+- [Tomcat](http://tomcat.apache.org/) d'ou `Spring Boot` inclura et configurera automatiquement `Tomcat` dans le cadre de l'exécution de l'application.
 -  Langage Java,Platforme IntelliJ
--  Tirer part de la librairie [Documents4J](http://documents4j.com/) qui offre plusieurs types de conversion de documents .
+-  Tirer part de la librairie [Documents4J](http://documents4j.com/) qui offre plusieurs types de conversion de documents.
+
+### Screenshot:
+![screenshot](assets/sunlight-screenshot.png)
