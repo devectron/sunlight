@@ -21,21 +21,13 @@ func main() {
 	core.StartListening(config())
 }
 func config() core.Config {
-	serverPort := os.Getenv("SERVER_PORT")
-	sqlPort := os.Getenv("PORT")
-	sqlDbName := os.Getenv("SQL_DB_NAME")
+	serverPort := os.Getenv("PORT")
 	mailApiPublic := os.Getenv("MAILJET_PUBLIC")
 	mailapiPrivate := os.Getenv("MAILJET_PRIVATE")
 	convertApi := os.Getenv("CONVERT_API")
 	if serverPort == "" {
 		log.War("No $SERVER_PORT found using the default :5000")
 		serverPort = "5000"
-	}
-	if sqlPort == "" {
-		log.War("No $SQL_PORT found.")
-	}
-	if sqlDbName == "" {
-		log.War("No $SQL_DB_NAME found.")
 	}
 	if mailApiPublic == "" {
 		log.War("No $MAILJET_PUBLIC found.")
@@ -48,8 +40,6 @@ func config() core.Config {
 	}
 	return core.Config{
 		ServerPort:     serverPort,
-		SqlDbPort:      sqlPort,
-		SqlDbName:      sqlDbName,
 		EmailName:      "devectron.not.replay@gmail.com",
 		MailApiPublic:  mailApiPublic,
 		MailApiPrivate: mailapiPrivate,

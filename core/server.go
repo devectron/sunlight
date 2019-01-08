@@ -116,6 +116,8 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(32 << 20) //memory storage
 	file, handler, err := r.FormFile("file")
 	if err != nil {
+		m.data.Error = "Error While uploading file"
+		m.data.ErrorBool = true
 		log.Err("Error While uploading file %v", err)
 	}
 	defer file.Close()
@@ -132,12 +134,18 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Err("Error while getting url %v", err)
 	}
-	//log.Inf("URL: %v", u)
 	if len(u) != 0 {
 		email := r.PostFormValue("email")
-		SendMail(email, u[0], m.conf.MailApiPublic, m.conf.MailApiPrivate)
+		err = SendMail(email, u[0], m.conf.MailApiPublic, m.conf.MailApiPrivate)
+		if err != nil {
+			m.data.Error = "Error while converting and sending email"
+			m.data.ErrorBool = true
+		} else {
+			m.data.Inf = "Your file " + handler.Filename + " has been successfully converted."
+			m.data.InfBool = true
+			m.data.ErrorBool = false
+			m.data.NbrConv += 1
+		}
 	}
-	m.data.Inf = "Your file " + handler.Filename + " has been successfully converted."
-	m.data.InfBool = true
 	m.Index(w, r)
 }

@@ -5,7 +5,7 @@ import (
 	. "github.com/mailjet/mailjet-apiv3-go"
 )
 
-func SendMail(tomail string, link string, publicapi string, privateapi string) {
+func SendMail(tomail string, link string, publicapi string, privateapi string) error {
 	log.Inf("Sending e-mail...")
 	mailjetClient := NewMailjetClient(publicapi, privateapi)
 	email := &InfoSendMail{
@@ -23,6 +23,8 @@ func SendMail(tomail string, link string, publicapi string, privateapi string) {
 	_, err := mailjetClient.SendMail(email)
 	if err != nil {
 		log.Err("Error While sending email %v", err)
+		return err
 	}
 	log.Inf("Mail send successfully...")
+	return nil
 }
