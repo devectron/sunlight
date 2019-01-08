@@ -42,8 +42,7 @@ Spring MVC est la bibliothèque d'infrastructure Spring traditionnelle pour la c
 ![class](assets/class.png)
 
 ### L'architecture de la couche des données :
-On va travailler avec sql (`sqlite`) parce-que c'est lèger et notre base de donnée est petite.
-Spring Boot créera automatiquement une base de données intégrée et une `DataSourceinstance` dans le contexte de l'application,une fois les dépendances définies, `Spring Boot` fournira les configurations par défaut pour l'application. Bien sûr, nous pouvons modifier les configurations si nous le souhaitons, mais grâce à `Spring Boot`, nous avons une longueur d'avance: une application prête à l'emploi entièrement configurée.
+
 
 ### Manière de gestion des demandes :
 La maniere la plus efficace c'est d'utiliser `TaskExecutor` du package spring qui gere les `threads` d'ou l'utilisation de plusieurs threads (processus legers) permet de paralléliser le traitement et de l'executer rapidement.
