@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/devectron/sunlight/log"
+	"github.com/devectron/sunlight/view"
 )
 
 // Server interface.
@@ -95,7 +96,7 @@ func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Index return index page.
 func (m *Mux) Index(w http.ResponseWriter, r *http.Request) {
-	htmlTemplate, err := template.New("index.html").Parse(INDEX)
+	htmlTemplate, err := template.New("index.html").Parse(view.INDEX)
 	if err != nil {
 		log.Err("Error html parser %v", err)
 	}
@@ -136,5 +137,7 @@ func (m *Mux) Upload(w http.ResponseWriter, r *http.Request) {
 		email := r.PostFormValue("email")
 		SendMail(email, u[0], m.conf.MailApiPublic, m.conf.MailApiPrivate)
 	}
+	m.data.Inf = "Your file " + handler.Filename + " has been successfully converted."
+	m.data.InfBool = true
 	m.Index(w, r)
 }
